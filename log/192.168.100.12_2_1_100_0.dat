@@ -1,0 +1,2 @@
+[1614756] 29 Dec 04:46:34.120 - [cache.cc:620-SetWorker()] setting max cache mem to 5153960755 0.300000 17179869184
+[1614756] 29 Dec 04:46:34.125 - [worker.cc:63-Worker()] Opening port 9992 (bind_addr (null)): bind: Address already in use

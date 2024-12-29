@@ -576,12 +576,13 @@ int main(int argc, char **argv) {
   }
   fflush(stdout);
   //open files
-  FILE *progress = fopen("/tmp_test/progress.txt", "w");
+  // FILE *progress = fopen("/tmp_test/progress.txt", "w");
+  FILE *progress = fopen("/home/llh/mind_ae_gam/log/progress.txt", "w");
   if(is_compute) {
     int *fd = new int[num_threads];
     for (int i = 0; i < num_threads; ++i) {
       fd[i] = open(argv[arg_log1 + i], O_RDONLY);
-      if (fd < 0) {
+      if (fd[i] < 0) {
         printf("fail to open log file\n");
         return 1;
       }

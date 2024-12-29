@@ -18,21 +18,21 @@
 using namespace dht;
 
 constexpr uint32_t KEY_SIZE = 100;
-constexpr uint32_t REPORT = 100000;
+constexpr uint32_t REPORT = 1000;
 
 int is_master = 0;
 const char* ip_master = "10.10.10.119"; //get_local_ip("eth0").c_str();
 const char* ip_worker = "localhost"; // get_local_ip("eth0").c_str();
-int port_master = 9991;
-int port_worker = 9992;
+int port_master = 2214;
+int port_worker = 2216;
 int no_thread = 1;
 int no_client = 1;
 int get_ratio = 100;
 int val_size = 32;
 int cache_th = 30;
 int client_id = 0;
-int iter = 40000;
-const char *ycsb_dir = "/data/caiqc/zipf";
+int iter = 1000;
+const char *ycsb_dir = "/home/llh/DRust_home/dataset/dht/zipf";
 
 pthread_t *threads;
 pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER;    
@@ -73,17 +73,19 @@ void populate(FILE * fp, kvClient* cli) {
   fprintf(stdout, "start to populate\n");
   int cnt = 0;
   while(cnt++ < iter && fgets(key, KEY_SIZE, fp)) {
-    key[strlen(key) - 1] = 0;
+    key[strlen(key) - 1] = '\0';
+    printf("key: %s\n", key);
     cli->put(key, value);
     if (finished.fetch_add(1, std::memory_order_relaxed) % REPORT == 0) {
       current = mstime();
-      printf("%.2f\n", (1000.0 * REPORT)/(current - last_report));
+      printf("populate time: %.2f\n", (1000.0 * REPORT)/(current - last_report));
       last_report = current;
     }
   }
+  printf("populate finished\n");
 
   double duration = mstime() - start;
-  printf("%lu, %.2f\n", 
+  printf("throughput: %lu, %.2f\n", 
       finished.load(), 
       (finished-1) * 1000/duration); 
 }
@@ -115,7 +117,7 @@ void benchmark(FILE* fp, kvClient* cli) {
 
     if (finished.fetch_add(1, std::memory_order_relaxed) % REPORT == 0) {
       current = mstime();
-      printf("%.2f\n", (1000.0 * REPORT)/(current - last_report));
+      printf("benchmark time: %.2f\n", (1000.0 * REPORT)/(current - last_report));
       last_report = current;
     }
   }
@@ -123,7 +125,7 @@ void benchmark(FILE* fp, kvClient* cli) {
   double duration = mstime() - start;
   double gets = get_finished.load(), sets = set_finished.load();
   double glat = get_latency.load(), slat = set_latency.load();
-  printf("%lu, %.2f", finished - 1, (finished-1) * 1000/duration); 
+  printf("throughput: %lu, %.2f", finished - 1, (finished-1) * 1000/duration); 
   if (gets > 0) printf(", %.2f", glat/gets);
   else printf(", -");
   if (sets > 0) printf(", %.2f", slat/sets);
@@ -280,6 +282,7 @@ int main(int argc, char* argv[]) {
       if (fname[strlen(fname) - 1] != '/')
         fname[strlen(fname)] = '/';
       strcat(fname, ent->d_name);
+      // printf("file: %s\n", fname);
       sleep(10);
       pthread_create(&threads[i], NULL, do_work, fname);
     }

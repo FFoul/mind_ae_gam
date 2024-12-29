@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-bench='/user/caiqc/gam-release/dht/benchmark'
-master="ciidaa-a05"
-log_dir="/user/caiqc/log"
+bench='/home/llh/mind_ae_gam/dht/benchmark'
+master="192.168.100.12"
+worker="192.168.100.21"
+log_dir="/home/llh/mind_ae_gam/log"
 
 mk_dat_dir() {
     for ((id = 5; id <= 20; id++)); do
